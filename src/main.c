@@ -13,7 +13,9 @@ int main(int argc, char **argv) {
 
     int tokens_len = tokenize(expression, tokens, 1024);
 
-    interprete(tokens, tokens_len);
+    float result = interprete(tokens, tokens_len);
+
+    printf("%f\n", result);
 
     return 0;
 }

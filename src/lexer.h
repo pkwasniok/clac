@@ -5,6 +5,7 @@
 #define OPERATOR_SUBTRACT '-'
 #define OPERATOR_MULTIPLY '*'
 #define OPERATOR_DIVIDE   '/'
+#define OPERATOR_POWER    '^'
 
 typedef struct token {
     enum {

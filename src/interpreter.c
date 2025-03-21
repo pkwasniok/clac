@@ -1,11 +1,12 @@
 #include "interpreter.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 void print_stack(float stack[], int len);
 void print_token(token_t token);
 
-void interprete(token_t tokens[], int len) {
+float interprete(token_t tokens[], int len) {
     float stack[1024];
     int stack_ptr = 0;
 
@@ -34,18 +35,21 @@ void interprete(token_t tokens[], int len) {
                 case OPERATOR_DIVIDE:
                     res = lhs / rhs;
                     break;
+                case OPERATOR_POWER:
+                    res = pow(lhs, rhs);
+                    break;
             }
 
             stack[stack_ptr++] = res;
         } else if (token.type == LITERAL_NUMBER) {
             stack[stack_ptr++] = token.data.literal_number;
         }
-
-        print_token(token);
-        printf("\n");
-        print_stack(stack, stack_ptr);
-        printf("\n\n");
     }
+
+    if (stack_ptr > 0)
+        stack_ptr -= 1;
+
+    return stack[stack_ptr];
 }
 
 void print_stack(float stack[], int len) {

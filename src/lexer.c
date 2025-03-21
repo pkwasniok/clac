@@ -14,7 +14,7 @@ size_t tokenize(char *expression, token_t tokens[], size_t len) {
     while (*ptr != '\0') {
         if (state == LEXER_START)
         {
-            if (*ptr == '+' || *ptr == '-' || *ptr == '*' || *ptr == '/') {
+            if (*ptr == '+' || *ptr == '-' || *ptr == '*' || *ptr == '/' || *ptr == '^') {
                 ptr--;
                 state = LEXER_OPERATOR;
             } else if (*ptr >= '0' && *ptr <= '9') {
@@ -40,6 +40,9 @@ size_t tokenize(char *expression, token_t tokens[], size_t len) {
                     break;
                 case OPERATOR_DIVIDE:
                     token.data.operator = OPERATOR_DIVIDE;
+                    break;
+                case OPERATOR_POWER:
+                    token.data.operator = OPERATOR_POWER;
                     break;
             }
 
