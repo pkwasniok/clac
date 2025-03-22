@@ -6,6 +6,9 @@
 void print_stack(float stack[], int len);
 void print_token(token_t token);
 
+int interprete_operator(float *stack, int *stack_ptr, int operator);
+int interprete_literal_number(float *stack, int *stack_ptr, float literal_number);
+
 float interprete(token_t tokens[], int len) {
     float stack[1024];
     int stack_ptr = 0;
@@ -13,36 +16,13 @@ float interprete(token_t tokens[], int len) {
     for (int i = 0; i < len; i++) {
         token_t token = tokens[i];
 
-        if (token.type == OPERATOR) {
-            if (stack_ptr < 2) {
+        switch (token.type) {
+            case OPERATOR:
+                interprete_operator(stack, &stack_ptr, token.data.operator);
                 break;
-            }
-
-            float rhs = stack[--stack_ptr];
-            float lhs = stack[--stack_ptr];
-            float res = 0;
-
-            switch (token.data.operator) {
-                case OPERATOR_ADD:
-                    res = lhs + rhs;
-                    break;
-                case OPERATOR_SUBTRACT:
-                    res = lhs - rhs;
-                    break;
-                case OPERATOR_MULTIPLY:
-                    res = lhs * rhs;
-                    break;
-                case OPERATOR_DIVIDE:
-                    res = lhs / rhs;
-                    break;
-                case OPERATOR_POWER:
-                    res = pow(lhs, rhs);
-                    break;
-            }
-
-            stack[stack_ptr++] = res;
-        } else if (token.type == LITERAL_NUMBER) {
-            stack[stack_ptr++] = token.data.literal_number;
+            case LITERAL_NUMBER:
+                interprete_literal_number(stack, &stack_ptr, token.data.literal_number);
+                break;
         }
     }
 
@@ -51,6 +31,43 @@ float interprete(token_t tokens[], int len) {
 
     return stack[stack_ptr];
 }
+
+int interprete_operator(float *stack, int *stack_ptr, int operator) {
+    float result, rhs, lhs;
+
+    rhs = stack[--(*stack_ptr)];
+    lhs = stack[--(*stack_ptr)];
+
+    switch (operator) {
+        case OPERATOR_ADD:
+            result = lhs + rhs;
+            break;
+        case OPERATOR_SUBTRACT:
+            result = lhs - rhs;
+            break;
+        case OPERATOR_MULTIPLY:
+            result = lhs * rhs;
+            break;
+        case OPERATOR_DIVIDE:
+            result = lhs / rhs;
+            break;
+        case OPERATOR_POWER:
+            result = pow(lhs, rhs);
+            break;
+    }
+
+    stack[(*stack_ptr)++] = result;
+
+    return 0;
+}
+
+int interprete_literal_number(float *stack, int *stack_ptr, float literal_number) {
+    stack[(*stack_ptr)++] = literal_number;
+
+    return 0;
+}
+
+
 
 void print_stack(float stack[], int len) {
     printf("[ ");
