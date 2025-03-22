@@ -13,9 +13,6 @@ size_t tokenize(char *expression, token_t tokens[], size_t len) {
 
     size_t tokens_len = 0;
 
-    tokens = tokens;
-    len = len;
-
     int literal_ptr = 0;
     char literal[1024];
 

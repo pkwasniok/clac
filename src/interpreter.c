@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <error.h>
+#include <errno.h>
 
 void print_stack(float stack[], int len);
 void print_token(token_t token);
@@ -15,20 +17,18 @@ float interprete(token_t tokens[], int len) {
 
     for (int i = 0; i < len; i++) {
         token_t token = tokens[i];
-        int errno = -1;
 
         switch (token.type) {
             case OPERATOR:
-                errno = interprete_operator(stack, &stack_ptr, token.data.operator);
+                interprete_operator(stack, &stack_ptr, token.data.operator);
                 break;
             case LITERAL_NUMBER:
-                errno = interprete_literal_number(stack, &stack_ptr, token.data.literal_number);
+                interprete_literal_number(stack, &stack_ptr, token.data.literal_number);
                 break;
         }
 
         if (errno != 0) {
-            printf("ERROR\n");
-            return 0;
+            return -1;
         }
     }
 
@@ -55,8 +55,10 @@ int interprete_operator(float *stack, int *stack_ptr, int operator) {
             result = lhs * rhs;
             break;
         case OPERATOR_DIVIDE:
-            if (rhs == 0)
+            if (rhs == 0) {
+                errno = EZERO;
                 return -1;
+            }
             result = lhs / rhs;
             break;
         case OPERATOR_POWER:

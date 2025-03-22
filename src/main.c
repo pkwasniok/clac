@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include "args.h"
 #include "lexer.h"
 #include "interpreter.h"
@@ -15,7 +16,11 @@ int main(int argc, char **argv) {
 
     float result = interprete(tokens, tokens_len);
 
-    printf("%f\n", result);
+    if (errno == EZERO) {
+        printf("Cannot divide by zero!\n");
+    } else {
+        printf("%f\n", result);
+    }
 
     return 0;
 }
