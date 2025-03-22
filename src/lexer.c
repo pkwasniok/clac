@@ -1,9 +1,11 @@
 #include "lexer.h"
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
-#define LEXER_START    0
-#define LEXER_OPERATOR 1
-#define LEXER_LITERAL  2
+#define LEXER_START           0
+#define LEXER_OPERATOR        1
+#define LEXER_LITERAL_NUMBER  2
 
 size_t tokenize(char *expression, token_t tokens[], size_t len) {
     int state = LEXER_START;
@@ -11,64 +13,64 @@ size_t tokenize(char *expression, token_t tokens[], size_t len) {
 
     size_t tokens_len = 0;
 
+    tokens = tokens;
+    len = len;
+
+    int literal_ptr = 0;
+    char literal[1024];
+
     while (*ptr != '\0') {
-        if (state == LEXER_START)
-        {
-            if (*ptr == '+' || *ptr == '-' || *ptr == '*' || *ptr == '/' || *ptr == '^') {
-                ptr--;
-                state = LEXER_OPERATOR;
-            } else if (*ptr >= '0' && *ptr <= '9') {
-                ptr--;
-                state = LEXER_LITERAL;
-            }
-        }
-        else if (state == LEXER_OPERATOR)
-        {
-            token_t token;
+        switch (state) {
 
-            token.type = OPERATOR;
+            case LEXER_START:
 
-            switch (*ptr) {
-                case OPERATOR_ADD:
-                    token.data.operator = OPERATOR_ADD;
-                    break;
-                case OPERATOR_SUBTRACT:
-                    token.data.operator = OPERATOR_SUBTRACT;
-                    break;
-                case OPERATOR_MULTIPLY:
-                    token.data.operator = OPERATOR_MULTIPLY;
-                    break;
-                case OPERATOR_DIVIDE:
-                    token.data.operator = OPERATOR_DIVIDE;
-                    break;
-                case OPERATOR_POWER:
-                    token.data.operator = OPERATOR_POWER;
-                    break;
-            }
+                if (strchr("+-*/^", *ptr) != NULL && (*(ptr+1) == ' ' || *(ptr+1) == '\0')) {
+                    state = LEXER_OPERATOR;
+                    ptr--;
+                } else if (strchr("+-0123456789", *ptr) != NULL) {
+                    state = LEXER_LITERAL_NUMBER;
+                    ptr--;
+                }
 
-            tokens[tokens_len++] = token;
+                break;
 
-            state = LEXER_START;
-        }
-        else if (state == LEXER_LITERAL)
-        {
-            token_t token;
+            case LEXER_OPERATOR:
 
-            token.type = LITERAL_NUMBER;
+                char operator = *ptr;
 
-            int len = 0;
-            char literal[1024];
-            while ((*ptr >= '0' && *ptr <= '9') || *ptr == '.') {
-                literal[len++] = *ptr;
-                ptr++;
-            }
-            literal[len] = '\0';
+                token_t token;
+                token.type = OPERATOR;
+                token.data.operator = operator;
 
-            token.data.literal_number = atof(literal);
+                *(tokens++) = token;
 
-            tokens[tokens_len++] = token;
+                state = LEXER_START;
+                tokens_len++;
 
-            state = LEXER_START;
+                break;
+
+            case LEXER_LITERAL_NUMBER:
+
+                literal[literal_ptr++] = *ptr;
+
+                if (*(ptr+1) == ' ' || *(ptr+1) == '\0') {
+                    literal[literal_ptr] = '\0';
+                    literal_ptr = 0;
+
+                    float literal_number = atof(literal);
+
+                    token_t token;
+                    token.type = LITERAL_NUMBER;
+                    token.data.literal_number = literal_number;
+
+                    *(tokens++) = token;
+                    tokens_len++;
+
+                    state = LEXER_START;
+                }
+
+                break;
+
         }
 
         if (tokens_len >= len) {
