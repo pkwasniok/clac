@@ -5,22 +5,28 @@
 #include "args.h"
 #include "lexer.h"
 #include "interpreter.h"
+#include "stack.h"
 
 int main(int argc, char **argv) {
-    char expression[1024];
-    token_t tokens[1024];
+    argc = argc;
+    argv = argv;
 
-    parse_args(argc, argv, expression);
+    stack_init(1024);
 
-    int tokens_len = tokenize(expression, tokens, 1024);
-
-    float result = interprete(tokens, tokens_len);
-
-    if (errno == EZERO) {
-        printf("Cannot divide by zero!\n");
-    } else {
-        printf("%f\n", result);
-    }
+    /*char expression[1024];*/
+    /*token_t tokens[1024];*/
+    /**/
+    /*parse_args(argc, argv, expression);*/
+    /**/
+    /*int tokens_len = tokenize(expression, tokens, 1024);*/
+    /**/
+    /*float result = interprete(tokens, tokens_len);*/
+    /**/
+    /*if (errno == EZERO) {*/
+    /*    printf("Cannot divide by zero!\n");*/
+    /*} else {*/
+    /*    printf("%f\n", result);*/
+    /*}*/
 
     return 0;
 }
