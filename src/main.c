@@ -5,18 +5,35 @@
 #include "args.h"
 #include "lexer.h"
 #include "interpreter.h"
-#include "stack.h"
+#include "macro.h"
 
-int main(int argc, char **argv) {
-    char expression[1024];
-    token_t tokens[1024];
+void macro_sqrt(void);
+void macro_avg(void);
 
-    parse_args(argc, argv, expression);
+int main() {
+    macro_t macros[1024];
 
-    int tokens_len = tokenize(expression, tokens, 1024);
+    macros[0].name = "sqrt";
+    macros[0].handler = &macro_sqrt;
 
-    interprete(tokens, tokens_len);
+    macros[1].name = "avg";
+    macros[1].handler = &macro_avg;
+
+    char *name = "sqrt";
+    for (int i = 0; i < 2; i++) {
+        if (strcmp(name, macros[i].name) == 0) {
+            (*macros[i].handler)();
+        }
+    }
 
     return 0;
+}
+
+void macro_sqrt(void) {
+    printf("sqrt macro handler invoked!\n");
+}
+
+void macro_avg(void) {
+    printf("avg macro handler invoked!\n");
 }
 
