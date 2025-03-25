@@ -4,93 +4,76 @@
 #include <math.h>
 #include <error.h>
 #include <errno.h>
+#include <assert.h>
+#include "stack.h"
 
-void print_stack(float stack[], int len);
-void print_token(token_t token);
+void interprete_operator(token_t token);
+void interprete_literal_number(token_t token);
 
-int interprete_operator(float *stack, int *stack_ptr, int operator);
-int interprete_literal_number(float *stack, int *stack_ptr, float literal_number);
-
-float interprete(token_t tokens[], int len) {
-    float stack[1024];
-    int stack_ptr = 0;
+void interprete(token_t tokens[], int len) {
+    stack_init(1024);
 
     for (int i = 0; i < len; i++) {
         token_t token = tokens[i];
 
-        switch (token.type) {
+        switch(token.type) {
             case OPERATOR:
-                interprete_operator(stack, &stack_ptr, token.data.operator);
+                interprete_operator(token);
                 break;
             case LITERAL_NUMBER:
-                interprete_literal_number(stack, &stack_ptr, token.data.literal_number);
+                interprete_literal_number(token);
                 break;
         }
-
-        if (errno != 0) {
-            return -1;
-        }
     }
 
-    if (stack_ptr > 0)
-        stack_ptr -= 1;
-
-    return stack[stack_ptr];
+    stack_unwind();
 }
 
-int interprete_operator(float *stack, int *stack_ptr, int operator) {
-    float result, rhs, lhs;
+void interprete_operator(token_t token) {
+    assert(token.type == OPERATOR);
 
-    rhs = stack[--(*stack_ptr)];
-    lhs = stack[--(*stack_ptr)];
+    item_t lhs, rhs, res;
+    if (stack_pop(&rhs) || stack_pop(&lhs)) {
+        printf("Operator error!\n");
+        return;
+    }
 
-    switch (operator) {
+    assert(rhs.type == NUMBER);
+    assert(lhs.type == NUMBER);
+
+    res.type = NUMBER;
+
+    switch (token.data.operator) {
         case OPERATOR_ADD:
-            result = lhs + rhs;
+            res.value.number = lhs.value.number + rhs.value.number;
             break;
         case OPERATOR_SUBTRACT:
-            result = lhs - rhs;
+            res.value.number = lhs.value.number - rhs.value.number;
             break;
         case OPERATOR_MULTIPLY:
-            result = lhs * rhs;
+            res.value.number = lhs.value.number * rhs.value.number;
             break;
         case OPERATOR_DIVIDE:
-            if (rhs == 0) {
-                errno = EZERO;
-                return -1;
-            }
-            result = lhs / rhs;
+            res.value.number = lhs.value.number / rhs.value.number;
             break;
-        case OPERATOR_POWER:
-            result = pow(lhs, rhs);
+        default:
+            printf("Operator error!\n");
+            return;
             break;
     }
 
-    stack[(*stack_ptr)++] = result;
-
-    return 0;
+    stack_push(res);
 }
 
-int interprete_literal_number(float *stack, int *stack_ptr, float literal_number) {
-    stack[(*stack_ptr)++] = literal_number;
+void interprete_literal_number(token_t token) {
+    assert(token.type == LITERAL_NUMBER);
 
-    return 0;
-}
+    item_t item;
+    item.type = NUMBER;
+    item.value.number = token.data.literal_number;
 
-
-
-void print_stack(float stack[], int len) {
-    printf("[ ");
-    for (int i = 0; i < len; i++)
-        printf("%.4f ", stack[i]);
-    printf("]\n");
-}
-
-void print_token(token_t token) {
-    if (token.type == OPERATOR) {
-        printf("{%c}", token.data.operator);
-    } else if (token.type == LITERAL_NUMBER) {
-        printf("{%.4f}", token.data.literal_number);
+    if (stack_push(item)) {
+        printf("Stack error!\n");
     }
 }
 

@@ -1,5 +1,6 @@
 #include "stack.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 item_t *stack_buffer = NULL;
 int stack_size = 0;
@@ -31,5 +32,17 @@ int stack_pop(item_t *item) {
     *item = stack_buffer[--stack_ptr];
 
     return 0;
+}
+
+void stack_unwind() {
+    item_t item;
+
+    while (!stack_pop(&item)) {
+        switch (item.type) {
+            case NUMBER:
+                printf("{number, %.4f}\n", item.value.number);
+                break;
+        }
+    }
 }
 

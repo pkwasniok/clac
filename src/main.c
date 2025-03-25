@@ -8,25 +8,14 @@
 #include "stack.h"
 
 int main(int argc, char **argv) {
-    argc = argc;
-    argv = argv;
+    char expression[1024];
+    token_t tokens[1024];
 
-    stack_init(1024);
+    parse_args(argc, argv, expression);
 
-    /*char expression[1024];*/
-    /*token_t tokens[1024];*/
-    /**/
-    /*parse_args(argc, argv, expression);*/
-    /**/
-    /*int tokens_len = tokenize(expression, tokens, 1024);*/
-    /**/
-    /*float result = interprete(tokens, tokens_len);*/
-    /**/
-    /*if (errno == EZERO) {*/
-    /*    printf("Cannot divide by zero!\n");*/
-    /*} else {*/
-    /*    printf("%f\n", result);*/
-    /*}*/
+    int tokens_len = tokenize(expression, tokens, 1024);
+
+    interprete(tokens, tokens_len);
 
     return 0;
 }

@@ -11,4 +11,5 @@ typedef struct {
 int stack_init(int size);
 int stack_push(item_t item);
 int stack_pop(item_t *item);
+void stack_unwind();
 
