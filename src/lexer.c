@@ -3,9 +3,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#define LEXER_START           0
-#define LEXER_OPERATOR        1
-#define LEXER_LITERAL_NUMBER  2
+#define LEXER_START          0
+#define LEXER_OPERATOR       1
+#define LEXER_MACRO          2
+#define LEXER_LITERAL_NUMBER 3
 
 size_t tokenize(char *expression, token_t tokens[], size_t len) {
     int state = LEXER_START;
@@ -21,11 +22,14 @@ size_t tokenize(char *expression, token_t tokens[], size_t len) {
 
             case LEXER_START:
 
-                if (strchr("+-*/^", *ptr) != NULL && (*(ptr+1) == ' ' || *(ptr+1) == '\0')) {
+                if (strchr("+-*/^.", *ptr) != NULL && (*(ptr+1) == ' ' || *(ptr+1) == '\0')) {
                     state = LEXER_OPERATOR;
                     ptr--;
                 } else if (strchr("+-0123456789", *ptr) != NULL) {
                     state = LEXER_LITERAL_NUMBER;
+                    ptr--;
+                } else if (strchr("/", *ptr) != NULL) {
+                    state = LEXER_MACRO;
                     ptr--;
                 }
 
@@ -37,12 +41,26 @@ size_t tokenize(char *expression, token_t tokens[], size_t len) {
 
                 token_t token;
                 token.type = OPERATOR;
-                token.data.operator = operator;
+                token.data.operator = (operator == '.') ? '*' : operator;
 
                 *(tokens++) = token;
 
                 state = LEXER_START;
                 tokens_len++;
+
+                break;
+
+            case LEXER_MACRO:
+                literal[literal_ptr++] = *ptr;
+
+                if (*(ptr+1) == ' ' || *(ptr+1) == '\0') {
+                    literal[literal_ptr] = '\0';
+                    literal_ptr = 0;
+
+                    printf("{macro, %s}\n", literal);
+
+                    state = LEXER_START;
+                }
 
                 break;
 
@@ -67,7 +85,6 @@ size_t tokenize(char *expression, token_t tokens[], size_t len) {
                 }
 
                 break;
-
         }
 
         if (tokens_len >= len) {

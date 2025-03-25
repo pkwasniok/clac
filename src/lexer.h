@@ -10,6 +10,7 @@
 typedef struct token {
     enum {
         OPERATOR,
+        MACRO,
         LITERAL_NUMBER,
     } type;
     union {

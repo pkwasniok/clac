@@ -20,6 +20,8 @@ void interprete(token_t tokens[], int len) {
             case OPERATOR:
                 interprete_operator(token);
                 break;
+            case MACRO:
+                break;
             case LITERAL_NUMBER:
                 interprete_literal_number(token);
                 break;
@@ -54,7 +56,14 @@ void interprete_operator(token_t token) {
             res.value.number = lhs.value.number * rhs.value.number;
             break;
         case OPERATOR_DIVIDE:
+            if (rhs.value.number == 0) {
+                printf("Operator error!\n");
+                return;
+            }
             res.value.number = lhs.value.number / rhs.value.number;
+            break;
+        case OPERATOR_POWER:
+            res.value.number = pow(lhs.value.number, rhs.value.number);
             break;
         default:
             printf("Operator error!\n");

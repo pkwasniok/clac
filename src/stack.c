@@ -44,5 +44,7 @@ void stack_unwind() {
                 break;
         }
     }
+
+    free(stack_buffer);
 }
 
