@@ -1,4 +1,4 @@
-SOURCES = src/main.c src/**/*.c
+SOURCES = src/*.c src/**/*.c
 CFLAGS = -std=c23 -g3 -O0 -Wall -Wextra -Wpedantic
 LDFLAGS = -lm
 

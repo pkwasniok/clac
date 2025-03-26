@@ -9,8 +9,10 @@ typedef struct {
 
     struct {
         int operator;
-        int macro;
+        char *macro;
         double literal_number;
     } value;
 } token_t;
+
+void print_token(token_t token);
 

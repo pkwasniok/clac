@@ -8,5 +8,5 @@
 #define OPERATOR_DIVIDE   '/'
 #define OPERATOR_POWER    '^'
 
-size_t tokenize(char *expression, token_t tokens[], size_t len);
+int tokenize(char *expression, token_t tokens[], int len);
 

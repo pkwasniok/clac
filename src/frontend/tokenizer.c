@@ -4,100 +4,90 @@
 #include <string.h>
 #include <ctype.h>
 
-#define LEXER_START          0
-#define LEXER_OPERATOR       1
-#define LEXER_MACRO          2
-#define LEXER_LITERAL_NUMBER 3
-#define LEXER_END            4
+#define STATE_START          0
+#define STATE_OPERATOR       1
+#define STATE_MACRO          2
+#define STATE_LITERAL_NUMBER 3
+#define STATE_END            4
 
-size_t tokenize(char *expression, token_t tokens[], size_t len) {
-    int state = LEXER_START;
-    char *ptr = expression;
+int tokenize(char *expression, token_t tokens[], int len) {
+    int state, tokens_len, buffer_len;
+    char buffer[1024];
+    token_t token;
 
-    size_t tokens_len = 0;
+    tokens_len = 0;
+    buffer_len = 0;
+    state = STATE_START;
 
-    int literal_ptr = 0;
-    char literal[1024];
+    while (state != STATE_END) {
+        char c = *(expression++);
 
-    while (state != LEXER_END) {
         switch (state) {
+            
+            case STATE_START:
+                buffer_len = 0;
 
-            case LEXER_START:
+                if (c == '+' || c == '-' || c == '.' || c == '/' || c == '^')
+                    state = STATE_OPERATOR;
+                else if (c == '@')
+                    state = STATE_MACRO;
+                else if (isdigit(c))
+                    state = STATE_LITERAL_NUMBER;
 
-                if (strchr("+-*/^.", *ptr) != NULL && (*(ptr+1) == ' ' || *(ptr+1) == '\0')) {
-                    state = LEXER_OPERATOR;
-                    ptr--;
-                } else if (strchr("+-0123456789", *ptr) != NULL) {
-                    state = LEXER_LITERAL_NUMBER;
-                    ptr--;
-                } else if (strchr("@", *ptr) != NULL) {
-                    state = LEXER_MACRO;
-                } else {
-                    state = LEXER_END;
+                break;
+
+            case STATE_OPERATOR:
+
+                if (isspace(c) || c == '\0') {
+                    buffer[buffer_len++] = '\0';
+
+                    token.type = OPERATOR;
+                    token.value.operator = buffer[0];
+                    tokens[tokens_len++] = token;
                 }
 
                 break;
 
-            case LEXER_OPERATOR:
+            case STATE_MACRO:
 
-                char operator = *ptr;
+                if (isspace(c) || c == '\0') {
+                    buffer[buffer_len++] = '\0';
 
-                token_t token;
-                token.type = OPERATOR;
-                token.value.operator = (operator == '.') ? '*' : operator;
+                    // This leaks memory!!!
+                    char *macro = malloc(sizeof(char) * buffer_len);
+                    strcpy(macro, buffer);
 
-                *(tokens++) = token;
-
-                state = LEXER_START;
-                tokens_len++;
-
-                break;
-
-            case LEXER_MACRO:
-                if (!isspace(*ptr)) {
-                    literal[literal_ptr++] = *ptr;
-                } else {
-                    literal[literal_ptr] = '\0';
-                    literal_ptr = 0;
-
-                    printf("%s\n", literal);
-
-                    state = LEXER_START;
+                    token.type = MACRO;
+                    token.value.macro = macro;
+                    tokens[tokens_len++] = token;
                 }
 
                 break;
 
-            case LEXER_LITERAL_NUMBER:
+            case STATE_LITERAL_NUMBER:
 
-                literal[literal_ptr++] = *ptr;
+                if (isspace(c) || c == '\0') {
+                    buffer[buffer_len++] = '\0';
 
-                if (*(ptr+1) == ' ' || *(ptr+1) == '\0') {
-                    literal[literal_ptr] = '\0';
-                    literal_ptr = 0;
-
-                    float literal_number = atof(literal);
-
-                    token_t token;
                     token.type = LITERAL_NUMBER;
-                    token.value.literal_number = literal_number;
-
-                    *(tokens++) = token;
-                    tokens_len++;
-
-                    state = LEXER_START;
+                    token.value.literal_number = atof(buffer);
+                    tokens[tokens_len++] = token;
                 }
 
                 break;
-
-            case LEXER_END:
-                break;
         }
 
-        if (tokens_len >= len) {
-            return tokens_len;
-        }
+        // Common transitions
+        if (isspace(c))
+            state = STATE_START;
+        else if (c == '\0')
+            state = STATE_END;
 
-        ptr++;
+        // Buffer overflows
+        if (tokens_len >= len)
+            state = STATE_END;
+
+        buffer[buffer_len++] = c;
     }
 
     return tokens_len;
