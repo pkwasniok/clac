@@ -12,11 +12,11 @@ int main(int argc, char **argv) {
     token_t tokens[1024];
     tokens_len = tokenize(expression, tokens, 1024);
 
-    for (int i = 0; i < tokens_len; i++) {
-        print_token(tokens[i]);
-    }
+    /*for (int i = 0; i < tokens_len; i++) {*/
+    /*    print_token(tokens[i]);*/
+    /*}*/
 
-    /*interprete(tokens, tokens_len);*/
+    interprete(tokens, tokens_len);
 
     return 0;
 }
