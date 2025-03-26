@@ -1,4 +1,4 @@
-SOURCES = src/main.c src/args.c src/lexer.c src/interpreter.c src/stack.c src/macro.c
+SOURCES = src/main.c src/**/*.c
 CFLAGS = -std=c23 -g3 -O0 -Wall -Wextra -Wpedantic
 LDFLAGS = -lm
 

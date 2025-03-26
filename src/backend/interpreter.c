@@ -1,11 +1,10 @@
-#include "interpreter.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <error.h>
-#include <errno.h>
 #include <assert.h>
+#include "interpreter.h"
 #include "stack.h"
+#include "macro.h"
 
 void interprete_operator(token_t token);
 void interprete_literal_number(token_t token);
@@ -45,7 +44,7 @@ void interprete_operator(token_t token) {
 
     res.type = NUMBER;
 
-    switch (token.data.operator) {
+    switch (token.value.operator) {
         case OPERATOR_ADD:
             res.value.number = lhs.value.number + rhs.value.number;
             break;
@@ -79,7 +78,7 @@ void interprete_literal_number(token_t token) {
 
     item_t item;
     item.type = NUMBER;
-    item.value.number = token.data.literal_number;
+    item.value.number = token.value.literal_number;
 
     if (stack_push(item)) {
         printf("Stack error!\n");

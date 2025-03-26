@@ -1,12 +1,14 @@
-#include "lexer.h"
+#include "tokenizer.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 #define LEXER_START          0
 #define LEXER_OPERATOR       1
 #define LEXER_MACRO          2
 #define LEXER_LITERAL_NUMBER 3
+#define LEXER_END            4
 
 size_t tokenize(char *expression, token_t tokens[], size_t len) {
     int state = LEXER_START;
@@ -17,7 +19,7 @@ size_t tokenize(char *expression, token_t tokens[], size_t len) {
     int literal_ptr = 0;
     char literal[1024];
 
-    while (*ptr != '\0') {
+    while (state != LEXER_END) {
         switch (state) {
 
             case LEXER_START:
@@ -28,9 +30,10 @@ size_t tokenize(char *expression, token_t tokens[], size_t len) {
                 } else if (strchr("+-0123456789", *ptr) != NULL) {
                     state = LEXER_LITERAL_NUMBER;
                     ptr--;
-                } else if (strchr("/", *ptr) != NULL) {
+                } else if (strchr("@", *ptr) != NULL) {
                     state = LEXER_MACRO;
-                    ptr--;
+                } else {
+                    state = LEXER_END;
                 }
 
                 break;
@@ -41,7 +44,7 @@ size_t tokenize(char *expression, token_t tokens[], size_t len) {
 
                 token_t token;
                 token.type = OPERATOR;
-                token.data.operator = (operator == '.') ? '*' : operator;
+                token.value.operator = (operator == '.') ? '*' : operator;
 
                 *(tokens++) = token;
 
@@ -51,13 +54,13 @@ size_t tokenize(char *expression, token_t tokens[], size_t len) {
                 break;
 
             case LEXER_MACRO:
-                literal[literal_ptr++] = *ptr;
-
-                if (*(ptr+1) == ' ' || *(ptr+1) == '\0') {
+                if (!isspace(*ptr)) {
+                    literal[literal_ptr++] = *ptr;
+                } else {
                     literal[literal_ptr] = '\0';
                     literal_ptr = 0;
 
-                    printf("{macro, %s}\n", literal);
+                    printf("%s\n", literal);
 
                     state = LEXER_START;
                 }
@@ -76,7 +79,7 @@ size_t tokenize(char *expression, token_t tokens[], size_t len) {
 
                     token_t token;
                     token.type = LITERAL_NUMBER;
-                    token.data.literal_number = literal_number;
+                    token.value.literal_number = literal_number;
 
                     *(tokens++) = token;
                     tokens_len++;
@@ -84,6 +87,9 @@ size_t tokenize(char *expression, token_t tokens[], size_t len) {
                     state = LEXER_START;
                 }
 
+                break;
+
+            case LEXER_END:
                 break;
         }
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <stdlib.h>
-#include "lexer.h"
+#include "../frontend/tokenizer.h"
+#include "../token.h"
 
 #define EZERO 1
 
