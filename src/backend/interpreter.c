@@ -1,4 +1,3 @@
-#include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include <assert.h>
@@ -20,6 +19,7 @@ void interprete(token_t tokens[], int len) {
                 interprete_operator(token);
                 break;
             case MACRO:
+                interprete_macro(token);
                 break;
             case LITERAL_NUMBER:
                 interprete_literal_number(token);

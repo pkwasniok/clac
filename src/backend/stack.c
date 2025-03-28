@@ -37,13 +37,8 @@ int stack_pop(item_t *item) {
 void stack_unwind() {
     item_t item;
 
-    while (!stack_pop(&item)) {
-        switch (item.type) {
-            case NUMBER:
-                printf("{number, %.4f}\n", item.value.number);
-                break;
-        }
-    }
+    while (!stack_pop(&item))
+        ;
 
     free(stack_buffer);
 }
