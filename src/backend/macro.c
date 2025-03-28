@@ -7,7 +7,7 @@
 
 void handler_pop();
 void handler_flush();
-void handler_dump();
+void handler_avg();
 
 void interprete_macro(token_t token) {
     assert(token.type == MACRO);
@@ -20,8 +20,8 @@ void interprete_macro(token_t token) {
     macros[1].name = "@flush";
     macros[1].handler = &handler_flush;
 
-    macros[2].name = "@dump";
-    macros[2].handler = &handler_dump;
+    macros[2].name = "@avg";
+    macros[2].handler = &handler_avg;
 
     int found = 0;
     for (int i = 0; i < 3; i++) {
@@ -54,17 +54,29 @@ void handler_pop() {
 void handler_flush() {
     item_t item;
 
-    while (!stack_pop(&item))
-        ;
-}
-
-void handler_dump() {
-    item_t item;
-
     while (!stack_pop(&item)) {
         printf("%f ", item.value.number);
     }
 
     printf("\n");
+}
+
+void handler_avg() {
+    double sum = 0;
+    int c = 0;
+    item_t item;
+    while (!stack_pop(&item)) {
+        sum += item.value.number; 
+        c += 1;
+    }
+
+    if (c == 0) {
+        printf("Error: stack is empty!\n");
+        return;
+    }
+
+    item.value.number = sum / c;
+
+    stack_push(item);
 }
 
