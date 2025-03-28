@@ -11,6 +11,8 @@ void interprete_literal_number(token_t token);
 void interprete(token_t tokens[], int len) {
     stack_init(1024);
 
+    stack_load("stack");
+
     for (int i = 0; i < len; i++) {
         token_t token = tokens[i];
 
@@ -26,6 +28,8 @@ void interprete(token_t tokens[], int len) {
                 break;
         }
     }
+
+    stack_dump("stack");
 
     stack_unwind();
 }

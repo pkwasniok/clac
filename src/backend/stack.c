@@ -16,7 +16,7 @@ int stack_init(int size) {
 
 int stack_push(item_t item) {
     if (stack_ptr >= stack_size) {
-        return EFULL;
+        return E_FULL;
     }
 
     stack_buffer[stack_ptr++] = item;
@@ -26,7 +26,7 @@ int stack_push(item_t item) {
 
 int stack_pop(item_t *item) {
     if (stack_ptr <= 0) {
-        return EEMPTY;
+        return E_EMPTY;
     }
 
     *item = stack_buffer[--stack_ptr];
@@ -41,5 +41,37 @@ void stack_unwind() {
         ;
 
     free(stack_buffer);
+}
+
+void stack_dump(char *path) {
+    FILE *file = fopen(path, "w");
+
+    if (file == NULL) {
+        return;
+    }
+
+    item_t item;
+    while (!stack_pop(&item)) {
+        fprintf(file, "%f ", item.value.number);
+    }
+    fprintf(file, "\n");
+
+    fclose(file);
+}
+
+void stack_load(char *path) {
+    FILE *file = fopen(path, "r");
+
+    if (file == NULL) {
+        return;
+    }
+
+    item_t item;
+    item.type = NUMBER;
+    while (fscanf(file, "%lf", &item.value.number) == 1) {
+        stack_push(item);
+    }
+
+    fclose(file);
 }
 
