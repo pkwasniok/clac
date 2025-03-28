@@ -27,7 +27,7 @@ int tokenize(char *expression, token_t tokens[], int len) {
             case STATE_START:
                 buffer_len = 0;
 
-                if (c == '+' || c == '-' || c == '.' || c == '/' || c == '^')
+                if (strchr("+-./^", c))
                     state = STATE_OPERATOR;
                 else if (c == '@')
                     state = STATE_MACRO;
