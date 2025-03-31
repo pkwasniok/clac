@@ -37,7 +37,9 @@ int tokenize(char *expression, token_t tokens[], int len) {
 
             case STATE_OPERATOR:
 
-                if (isspace(c) || c == '\0') {
+                if (isdigit(c)) {
+                    state = STATE_LITERAL_NUMBER;
+                } else if (isspace(c) || c == '\0') {
                     buffer[buffer_len++] = '\0';
 
                     token.type = OPERATOR;
