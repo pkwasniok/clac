@@ -2,12 +2,14 @@
 #include "../token.h"
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "stack.h"
 
 void handler_pop();
 void handler_flush();
 void handler_avg();
+void handler_sort();
 
 void interprete_macro(token_t token) {
     assert(token.type == MACRO);
@@ -23,8 +25,11 @@ void interprete_macro(token_t token) {
     macros[2].name = "@avg";
     macros[2].handler = &handler_avg;
 
+    macros[3].name = "@sort";
+    macros[3].handler = &handler_sort;
+
     int found = 0;
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 4; i++) {
         if (strcmp(macros[i].name, token.value.macro) == 0) {
             (*macros[i].handler)();
             found = 1;
@@ -78,5 +83,36 @@ void handler_avg() {
     item.value.number = sum / c;
 
     stack_push(item);
+}
+
+int cmp(const void *a, const void *b) {
+    double l, r;
+
+    l = *(double*) a;
+    r = *(double*) b;
+
+    if (l > r) {
+        return -1;
+    } else {
+        return 1;
+    }
+}
+
+void handler_sort() {
+    double *buffer = malloc(sizeof(double) * stack_len());
+    int buffer_len = 0;
+    item_t item;
+
+    while (!stack_pop(&item)) {
+        buffer[buffer_len++] = item.value.number;
+    }
+
+    qsort(buffer, buffer_len, sizeof(double), cmp);
+
+    for (int i = 0; i < buffer_len; i++) {
+        item.type = NUMBER;
+        item.value.number = buffer[i];
+        stack_push(item);
+    }
 }
 

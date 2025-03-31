@@ -34,6 +34,10 @@ int stack_pop(item_t *item) {
     return 0;
 }
 
+int stack_len() {
+    return stack_ptr;
+}
+
 void stack_unwind() {
     item_t item;
 

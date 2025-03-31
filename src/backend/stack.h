@@ -13,6 +13,7 @@ typedef struct {
 int stack_init(int size);
 int stack_push(item_t item);
 int stack_pop(item_t *item);
+int stack_len();
 void stack_unwind();
 void stack_dump(char *path);
 void stack_load(char *path);
