@@ -114,5 +114,7 @@ void handler_sort() {
         item.value.number = buffer[i];
         stack_push(item);
     }
+
+    free(buffer);
 }
 
