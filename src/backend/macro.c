@@ -10,6 +10,7 @@ void handler_pop();
 void handler_flush();
 void handler_avg();
 void handler_sort();
+void handler_factorial();
 
 void interprete_macro(token_t token) {
     assert(token.type == MACRO);
@@ -28,8 +29,11 @@ void interprete_macro(token_t token) {
     macros[3].name = "@sort";
     macros[3].handler = &handler_sort;
 
+    macros[4].name = "@factorial";
+    macros[4].handler = &handler_factorial;
+
     int found = 0;
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 5; i++) {
         if (strcmp(macros[i].name, token.value.macro) == 0) {
             (*macros[i].handler)();
             found = 1;
@@ -116,5 +120,22 @@ void handler_sort() {
     }
 
     free(buffer);
+}
+
+void handler_factorial() {
+    double res = 1;
+
+    item_t item;
+    stack_pop(&item);
+
+    assert(item.type == NUMBER);
+
+    for (int i = 1; i <= (int) item.value.number; i++) {
+        res *= i; 
+    }
+
+    item.value.number = res;
+
+    stack_push(item);
 }
 
