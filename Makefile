@@ -8,7 +8,7 @@ install: build
 	cp .build/calc /usr/local/bin
 
 run: build
-	./.build/rpn
+	./.build/clac
 
 build: $(SOURCES)
 	mkdir -p .build
