@@ -12,17 +12,22 @@ void interprete(token_t tokens[], int len) {
 
     stack_init(&stack, 1024);
 
+    int res = 0;
     for (int i = 0; i < len; i++) {
         token_t token = tokens[i];
 
         switch(token.type) {
             case OPERATOR:
-                operator_interprete(&stack, token);
+                res = operator_interprete(&stack, token);
                 break;
             case LITERAL_NUMBER:
                 interprete_literal_number(&stack, token);
+                res = 0;
                 break;
         }
+
+        if (res)
+            break;
     }
 
     // Unwind and print stack

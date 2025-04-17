@@ -1,6 +1,6 @@
 #include "../stack.h"
 
-void operator_handler_subtract(Stack* stack) {
+int operator_handler_subtract(Stack* stack) {
     StackItem rhs, lhs, result;
 
     stack_pop_type(stack, NUMBER, &rhs);
@@ -12,6 +12,6 @@ void operator_handler_subtract(Stack* stack) {
 
     stack_push(stack, result);
 
-    return;
+    return 0;
 }
 

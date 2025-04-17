@@ -13,16 +13,20 @@ static Operator g_OPERATORS[] = {
     {'/', &operator_handler_divide},
 };
 
-void operator_interprete(Stack* stack, token_t token) {
+int operator_interprete(Stack* stack, token_t token) {
     assert(token.type == OPERATOR);
 
     for (int i = 0; i < LENGTHOF(g_OPERATORS); i++) {
         if (g_OPERATORS[i].symbol == token.value.operator) {
-            (*g_OPERATORS[i].handler)(stack);
-            return;
+            if ((*g_OPERATORS[i].handler)(stack))
+                return 1;
+
+            return 0;
         }
     }
 
     printf("Operator not found!\n");
+
+    return 1;
 }
 
