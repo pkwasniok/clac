@@ -5,9 +5,17 @@
 #define E_STACK_FULL 2
 #define E_STACK_EMPTY 3
 
+typedef enum {
+    NUMBER
+} StackItemType;
+
+typedef union {
+    double number;
+} StackItemData;
+
 typedef struct {
-    enum { NUMBER } type;
-    union { double number; } data;
+    StackItemType type;
+    StackItemData data;
 } StackItem;
 
 typedef struct {

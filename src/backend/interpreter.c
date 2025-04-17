@@ -25,7 +25,7 @@ void interprete(token_t tokens[], int len) {
         }
     }
 
-    // Unwind stack and print stack
+    // Unwind and print stack
     StackItem item;
     while (!stack_pop(&stack, &item)) {
         printf("%f\n", item.data.number);
