@@ -8,7 +8,7 @@ int main(int argc, char** argv) {
     parse_args(argc, argv, expression);
 
     int tokens_len = 0;
-    token_t tokens[1024];
+    Token tokens[1024];
     tokens_len = tokenize(expression, tokens, 1024);
 
     interprete(tokens, tokens_len);

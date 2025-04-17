@@ -9,10 +9,5 @@ extern int operator_handler_divide(Stack*);
 
 typedef int (*OperatorHandler)(Stack*);
 
-typedef struct {
-    char symbol;
-    OperatorHandler handler;
-} Operator;
-
-int operator_interprete(Stack* stack, token_t token);
+int operator_interprete(Stack* stack, Token token);
 

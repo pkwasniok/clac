@@ -3,5 +3,5 @@
 #include "../frontend/tokenizer.h"
 #include "../token.h"
 
-void interprete(token_t tokens[], int len);
+void interprete(Token tokens[], int len);
 

@@ -1,5 +1,12 @@
 #pragma once
 
+typedef enum {
+    ADD,
+    SUBTRACT,
+    MULTIPLY,
+    DIVIDE,
+} TokenOperator;
+
 typedef struct {
     enum {
         OPERATOR,
@@ -7,10 +14,8 @@ typedef struct {
     } type;
 
     struct {
-        int operator;
+        TokenOperator operator;
         double literal_number;
     } value;
-} token_t;
-
-void print_token(token_t token);
+} Token;
 

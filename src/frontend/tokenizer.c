@@ -8,10 +8,10 @@
 #define STATE_LITERAL_NUMBER 2
 #define STATE_END            3
 
-int tokenize(char *expression, token_t tokens[], int len) {
+int tokenize(char *expression, Token tokens[], int len) {
     int state, tokens_len, buffer_len;
     char buffer[1024];
-    token_t token;
+    Token token;
 
     tokens_len = 0;
     buffer_len = 0;
@@ -40,7 +40,22 @@ int tokenize(char *expression, token_t tokens[], int len) {
                     buffer[buffer_len++] = '\0';
 
                     token.type = OPERATOR;
-                    token.value.operator = buffer[0];
+
+                    switch (buffer[0]) {
+                        case '+':
+                            token.value.operator = ADD;
+                            break;
+                        case '-':
+                            token.value.operator = SUBTRACT;
+                            break;
+                        case 'x':
+                            token.value.operator = MULTIPLY;
+                            break;
+                        case '/':
+                            token.value.operator = DIVIDE;
+                            break;
+                    }
+
                     tokens[tokens_len++] = token;
                 }
 

@@ -4,24 +4,27 @@
 #include "stack.h"
 #include "operator/interpreter.h"
 
-int interprete_literal_number(Stack* stack, token_t token);
+int interprete_literal_number(Stack* stack, Token token);
 
-void interprete(token_t tokens[], int len) {
+void interprete(Token tokens[], int len) {
     Stack stack;
 
     stack_init(&stack, 1024);
 
     int res = 0;
     for (int i = 0; i < len; i++) {
-        token_t token = tokens[i];
+        Token token = tokens[i];
 
         switch(token.type) {
+
             case OPERATOR:
                 res = operator_interprete(&stack, token);
                 break;
+
             case LITERAL_NUMBER:
                 res = interprete_literal_number(&stack, token);
                 break;
+
         }
 
         if (res)
@@ -37,7 +40,7 @@ void interprete(token_t tokens[], int len) {
     stack_deinit(&stack);
 }
 
-int interprete_literal_number(Stack* stack, token_t token) {
+int interprete_literal_number(Stack* stack, Token token) {
     assert(token.type == LITERAL_NUMBER);
 
     StackItem item;
