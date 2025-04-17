@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include <math.h>
 #include <assert.h>
 #include "interpreter.h"
 #include "stack.h"
+#include "operator.h"
 
 void interprete_operator(Stack* stack, token_t token);
 void interprete_literal_number(Stack* stack, token_t token);
@@ -17,7 +17,7 @@ void interprete(token_t tokens[], int len) {
 
         switch(token.type) {
             case OPERATOR:
-                interprete_operator(&stack, token);
+                operator_interprete(&stack, token);
                 break;
             case LITERAL_NUMBER:
                 interprete_literal_number(&stack, token);
@@ -80,9 +80,6 @@ void interprete_operator(Stack* stack, token_t token) {
                 return;
             }
             res.data.number = lhs.data.number / rhs.data.number;
-            break;
-        case OPERATOR_POWER:
-            res.data.number = pow(lhs.data.number, rhs.data.number);
             break;
         default:
             printf("Operator error!\n");

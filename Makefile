@@ -2,6 +2,8 @@ SOURCES = src/*.c src/**/*.c
 CFLAGS = -std=c23 -g3 -O0 -Wall -Wextra -Wpedantic
 LDFLAGS = -lm
 
+SOURCES = $(wildcard src/*.c) $(wildcard src/**/*.c) $(wildcard src/backend/operator/*.c)
+
 default: build
 
 install: build

@@ -25,7 +25,7 @@ int tokenize(char *expression, token_t tokens[], int len) {
             case STATE_START:
                 buffer_len = 0;
 
-                if (strchr("+-./^", c))
+                if (strchr("+-x/", c))
                     state = STATE_OPERATOR;
                 else if (isdigit(c))
                     state = STATE_LITERAL_NUMBER;
