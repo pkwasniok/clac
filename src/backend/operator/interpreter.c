@@ -1,9 +1,8 @@
-#include "operator.h"
+#include "interpreter.h"
 #include <assert.h>
 #include <stdio.h>
-#include "../token.h"
-#include "stack.h"
-#include "operator/handlers.h"
+#include "../../token.h"
+#include "../stack.h"
 
 #define LENGTHOF(array) (int) (sizeof(array) / sizeof(array[0]))
 
@@ -19,7 +18,7 @@ void operator_interprete(Stack* stack, token_t token) {
 
     for (int i = 0; i < LENGTHOF(g_OPERATORS); i++) {
         if (g_OPERATORS[i].symbol == token.value.operator) {
-            (*g_OPERATORS[i].handler)();
+            (*g_OPERATORS[i].handler)(stack);
             return;
         }
     }

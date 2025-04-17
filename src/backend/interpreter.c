@@ -2,7 +2,7 @@
 #include <assert.h>
 #include "interpreter.h"
 #include "stack.h"
-#include "operator.h"
+#include "operator/interpreter.h"
 
 void interprete_operator(Stack* stack, token_t token);
 void interprete_literal_number(Stack* stack, token_t token);
