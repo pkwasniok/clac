@@ -52,6 +52,22 @@ int stack_pop(Stack* stack, StackItem* item) {
     return E_STACK_SUCCESS;
 }
 
+int stack_pop_type(Stack* stack, StackItemType type, StackItem* item) {
+    assert(stack->buffer != NULL);
+
+    if (stack->pointer == 0) {
+        return E_STACK_EMPTY;
+    }
+
+    if (stack->buffer[stack->pointer-1].type != type) {
+        return E_STACK_TYPE;
+    }
+
+    stack_pop(stack, item);
+
+    return E_STACK_SUCCESS;
+}
+
 int stack_getsize(Stack* stack) {
     assert(stack->buffer != NULL);
 

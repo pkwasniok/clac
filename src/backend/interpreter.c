@@ -37,15 +37,31 @@ void interprete(token_t tokens[], int len) {
 void interprete_operator(Stack* stack, token_t token) {
     assert(token.type == OPERATOR);
 
-    StackItem lhs, rhs, res;
-    if (stack_pop(stack, &rhs) || stack_pop(stack, &lhs)) {
-        printf("Operator error!\n");
+    int err;
+
+    StackItem rhs;
+    if ((err = stack_pop_type(stack, NUMBER, &rhs))) {
+        if (err == E_STACK_TYPE) {
+            printf("Operand error: operand type is invalid!\n");
+        } else if (err == E_STACK_EMPTY) {
+            printf("Operand error: not enough operands on stack!\n");
+        }
+
         return;
     }
 
-    assert(rhs.type == NUMBER);
-    assert(lhs.type == NUMBER);
+    StackItem lhs;
+    if ((err = stack_pop_type(stack, NUMBER, &lhs))) {
+        if (err == E_STACK_TYPE) {
+            printf("Operand error: operand type is invalid!\n");
+        } else if (err == E_STACK_EMPTY) {
+            printf("Operand error: not enough operands on stack!\n");
+        }
 
+        return;
+    }
+
+    StackItem res;
     res.type = NUMBER;
 
     switch (token.value.operator) {
