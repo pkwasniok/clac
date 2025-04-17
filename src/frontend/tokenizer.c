@@ -5,9 +5,8 @@
 
 #define STATE_START          0
 #define STATE_OPERATOR       1
-#define STATE_MACRO          2
-#define STATE_LITERAL_NUMBER 3
-#define STATE_END            4
+#define STATE_LITERAL_NUMBER 2
+#define STATE_END            3
 
 int tokenize(char *expression, token_t tokens[], int len) {
     int state, tokens_len, buffer_len;
@@ -28,8 +27,6 @@ int tokenize(char *expression, token_t tokens[], int len) {
 
                 if (strchr("+-./^", c))
                     state = STATE_OPERATOR;
-                else if (c == '@')
-                    state = STATE_MACRO;
                 else if (isdigit(c))
                     state = STATE_LITERAL_NUMBER;
 
@@ -44,22 +41,6 @@ int tokenize(char *expression, token_t tokens[], int len) {
 
                     token.type = OPERATOR;
                     token.value.operator = buffer[0];
-                    tokens[tokens_len++] = token;
-                }
-
-                break;
-
-            case STATE_MACRO:
-
-                if (isspace(c) || c == '\0') {
-                    buffer[buffer_len++] = '\0';
-
-                    // This leaks memory!!!
-                    char *macro = malloc(sizeof(char) * buffer_len);
-                    strcpy(macro, buffer);
-
-                    token.type = MACRO;
-                    token.value.macro = macro;
                     tokens[tokens_len++] = token;
                 }
 

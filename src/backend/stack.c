@@ -1,81 +1,60 @@
 #include "stack.h"
 #include <stdlib.h>
-#include <stdio.h>
+#include <assert.h>
 
-item_t *stack_buffer = NULL;
-int stack_size = 0;
-int stack_ptr = 0;
+int stack_init(Stack* stack, int size) {
+    assert(size > 0);
 
-int stack_init(int size) {
-    stack_buffer = calloc(size, sizeof(item_t));
-    stack_size = size;
-    stack_ptr = 0;
+    StackItem* buffer = malloc(sizeof(StackItem) * size);
 
-    return 0;
-}
-
-int stack_push(item_t item) {
-    if (stack_ptr >= stack_size) {
-        return E_FULL;
+    if (buffer == NULL) {
+        return E_STACK_NOMEM;
     }
 
-    stack_buffer[stack_ptr++] = item;
+    stack->buffer = buffer;
+    stack->buffer_size = size;
+    stack->pointer = 0;
 
-    return 0;
+    return E_STACK_SUCCESS;
 }
 
-int stack_pop(item_t *item) {
-    if (stack_ptr <= 0) {
-        return E_EMPTY;
-    }
+void stack_deinit(Stack* stack) {
+    assert(stack->buffer != NULL);
 
-    *item = stack_buffer[--stack_ptr];
+    free(stack->buffer);
 
-    return 0;
+    stack->buffer = NULL;
+    stack->buffer_size = 0;
+    stack->pointer = 0;
 }
 
-int stack_len() {
-    return stack_ptr;
+int stack_push(Stack* stack, StackItem item) {
+    assert(stack->buffer != NULL);
+
+    if (stack->pointer >= stack->buffer_size) {
+        return E_STACK_FULL;
+    }
+
+    stack->buffer[stack->pointer++] = item;
+
+    return E_STACK_SUCCESS;
 }
 
-void stack_unwind() {
-    item_t item;
+int stack_pop(Stack* stack, StackItem* item) {
+    assert(stack->buffer != NULL);
 
-    while (!stack_pop(&item))
-        ;
+    if (stack->pointer == 0) {
+        return E_STACK_EMPTY;
+    }
 
-    free(stack_buffer);
+    *item = stack->buffer[--stack->pointer];
+
+    return E_STACK_SUCCESS;
 }
 
-void stack_dump(char *path) {
-    FILE *file = fopen(path, "w");
+int stack_getsize(Stack* stack) {
+    assert(stack->buffer != NULL);
 
-    if (file == NULL) {
-        return;
-    }
-
-    item_t item;
-    while (!stack_pop(&item)) {
-        fprintf(file, "%f ", item.value.number);
-    }
-    fprintf(file, "\n");
-
-    fclose(file);
-}
-
-void stack_load(char *path) {
-    FILE *file = fopen(path, "r");
-
-    if (file == NULL) {
-        return;
-    }
-
-    item_t item;
-    item.type = NUMBER;
-    while (fscanf(file, "%lf", &item.value.number) == 1) {
-        stack_push(item);
-    }
-
-    fclose(file);
+    return stack->pointer;
 }
 

@@ -3,42 +3,42 @@
 #include <assert.h>
 #include "interpreter.h"
 #include "stack.h"
-#include "macro.h"
 
-void interprete_operator(token_t token);
-void interprete_literal_number(token_t token);
+void interprete_operator(Stack* stack, token_t token);
+void interprete_literal_number(Stack* stack, token_t token);
 
 void interprete(token_t tokens[], int len) {
-    stack_init(1024);
+    Stack stack;
 
-    stack_load("stack");
+    stack_init(&stack, 1024);
 
     for (int i = 0; i < len; i++) {
         token_t token = tokens[i];
 
         switch(token.type) {
             case OPERATOR:
-                interprete_operator(token);
-                break;
-            case MACRO:
-                interprete_macro(token);
+                interprete_operator(&stack, token);
                 break;
             case LITERAL_NUMBER:
-                interprete_literal_number(token);
+                interprete_literal_number(&stack, token);
                 break;
         }
     }
 
-    stack_dump("stack");
+    // Unwind stack and print stack
+    StackItem item;
+    while (!stack_pop(&stack, &item)) {
+        printf("%f\n", item.data.number);
+    }
 
-    stack_unwind();
+    stack_deinit(&stack);
 }
 
-void interprete_operator(token_t token) {
+void interprete_operator(Stack* stack, token_t token) {
     assert(token.type == OPERATOR);
 
-    item_t lhs, rhs, res;
-    if (stack_pop(&rhs) || stack_pop(&lhs)) {
+    StackItem lhs, rhs, res;
+    if (stack_pop(stack, &rhs) || stack_pop(stack, &lhs)) {
         printf("Operator error!\n");
         return;
     }
@@ -50,23 +50,23 @@ void interprete_operator(token_t token) {
 
     switch (token.value.operator) {
         case OPERATOR_ADD:
-            res.value.number = lhs.value.number + rhs.value.number;
+            res.data.number = lhs.data.number + rhs.data.number;
             break;
         case OPERATOR_SUBTRACT:
-            res.value.number = lhs.value.number - rhs.value.number;
+            res.data.number = lhs.data.number - rhs.data.number;
             break;
         case OPERATOR_MULTIPLY:
-            res.value.number = lhs.value.number * rhs.value.number;
+            res.data.number = lhs.data.number * rhs.data.number;
             break;
         case OPERATOR_DIVIDE:
-            if (rhs.value.number == 0) {
+            if (rhs.data.number == 0) {
                 printf("Operator error!\n");
                 return;
             }
-            res.value.number = lhs.value.number / rhs.value.number;
+            res.data.number = lhs.data.number / rhs.data.number;
             break;
         case OPERATOR_POWER:
-            res.value.number = pow(lhs.value.number, rhs.value.number);
+            res.data.number = pow(lhs.data.number, rhs.data.number);
             break;
         default:
             printf("Operator error!\n");
@@ -74,17 +74,17 @@ void interprete_operator(token_t token) {
             break;
     }
 
-    stack_push(res);
+    stack_push(stack, res);
 }
 
-void interprete_literal_number(token_t token) {
+void interprete_literal_number(Stack* stack, token_t token) {
     assert(token.type == LITERAL_NUMBER);
 
-    item_t item;
+    StackItem item;
     item.type = NUMBER;
-    item.value.number = token.value.literal_number;
+    item.data.number = token.value.literal_number;
 
-    if (stack_push(item)) {
+    if (stack_push(stack, item)) {
         printf("Stack error!\n");
     }
 }

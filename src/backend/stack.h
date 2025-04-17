@@ -1,20 +1,28 @@
 #pragma once
 
-#include <stdio.h>
-
-#define E_FULL -1
-#define E_EMPTY   -2
+#define E_STACK_SUCCESS 0
+#define E_STACK_NOMEM 1
+#define E_STACK_FULL 2
+#define E_STACK_EMPTY 3
 
 typedef struct {
     enum { NUMBER } type;
-    union { double number; } value;
-} item_t;
+    union { double number; } data;
+} StackItem;
 
-int stack_init(int size);
-int stack_push(item_t item);
-int stack_pop(item_t *item);
-int stack_len();
-void stack_unwind();
-void stack_dump(char *path);
-void stack_load(char *path);
+typedef struct {
+    int pointer;
+    int buffer_size;
+    StackItem* buffer;
+} Stack;
+
+int stack_init(Stack*, int size);
+
+void stack_deinit(Stack*);
+
+int stack_push(Stack*, StackItem);
+
+int stack_pop(Stack*, StackItem*);
+
+int stack_getsize(Stack*);
 
