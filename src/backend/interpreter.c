@@ -3,6 +3,7 @@
 #include "interpreter.h"
 #include "stack.h"
 #include "operator/interpreter.h"
+#include "literal/interpreter.h"
 
 int interprete_literal_number(Stack* stack, Token token);
 
@@ -16,15 +17,12 @@ void interprete(Token tokens[], int len) {
         Token token = tokens[i];
 
         switch(token.type) {
-
             case OPERATOR:
                 res = operator_interprete(&stack, token);
                 break;
-
             case LITERAL_NUMBER:
-                res = interprete_literal_number(&stack, token);
+                res = literal_interprete(&stack, token);
                 break;
-
         }
 
         if (res)
@@ -38,19 +36,5 @@ void interprete(Token tokens[], int len) {
     }
 
     stack_deinit(&stack);
-}
-
-int interprete_literal_number(Stack* stack, Token token) {
-    assert(token.type == LITERAL_NUMBER);
-
-    StackItem item;
-    item.type = NUMBER;
-    item.data.number = token.value.literal_number;
-
-    if (stack_push(stack, item)) {
-        printf("Stack error!\n");
-    }
-
-    return 0;
 }
 
